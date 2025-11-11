@@ -36,6 +36,7 @@ from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.events import EventQueue
 from a2a.utils import new_task, new_agent_text_message
 from a2a.types import Part, TextPart, TaskState, AgentCard
+from a2a.types import Part, TextPart, TaskState, AgentCard, Message
 
 from .logging import (
     update_battle_process,
@@ -250,7 +251,7 @@ class AgentBeatsExecutor(AgentExecutor):
             MCPServerSse(
                 client_session_timeout_seconds=20,
                 cache_tools_list=True,
-                params={"url": url, "timeout": 5, "sse_read_timeout": 20},
+                params={"url": url, "timeout": 5, "sse_read_timeout": 120},
             )
             for url in self.mcp_url_list
         ]
@@ -448,25 +449,53 @@ class AgentBeatsExecutor(AgentExecutor):
         )
 
         # try to parse battle_info from the request
-        try:
-            raw_input_str = context.get_user_input()
-            raw_input_json = json.loads(raw_input_str)
-
-            set_battle_context(
-                {
-                    "frontend_agent_name": raw_input_json["agent_name"],
-                    "agent_id": raw_input_json["agent_id"],
-                    "battle_id": raw_input_json["battle_id"],
-                    "backend_url": raw_input_json["backend_url"],
-                }
-            )
+        try:  
+            raw_input_str = context.get_user_input()  
+            raw_input_json = json.loads(raw_input_str)  
+      
+            # Check if this is a green agent notification (nested structure)
+            if "green_battle_context" in raw_input_json:  
+                # Extract from nested structure
+                green_context = raw_input_json["green_battle_context"]  
+                set_battle_context({  
+                     "frontend_agent_name": green_context["agent_name"],  
+                        "agent_id": green_context["agent_id"],  
+                        "battle_id": green_context["battle_id"],  
+                        "backend_url": green_context["backend_url"], 
+                })  
+            else:  
+                # Flat structure for non-green agents
+                set_battle_context({  
+                    "frontend_agent_name": raw_input_json["agent_name"],  
+                    "agent_id": raw_input_json["agent_id"],  
+                    "battle_id": raw_input_json["battle_id"],  
+                    "backend_url": raw_input_json["backend_url"],  
+                })
             # self.battle_context_hook = AgentBeatsHook(self.battle_context)
             print(
                 "[AgentBeatsExecutor] Battle context parsed:",
                 get_battle_context(),
             )
-
-            reply_text = (
+            if raw_input_json.get("type") == "battle_start":  
+                battle_id = raw_input_json["battle_id"]  
+                trigger_message = f"Battle {battle_id} has started. Begin executing your Action Plan now." 
+                
+                trigger_msg = Message(  
+                    role="user",  
+                    parts=[Part(root=TextPart(text=trigger_message))]  
+                )  
+          
+                # 构建新的 RequestContext  
+                new_context = RequestContext(  
+                    message=trigger_msg,  
+                    current_task=task,  
+                    context_id=task.context_id  
+                )  
+          
+                # 调用 agent 执行 Action Plan  
+                reply_text = await self.invoke_agent(new_context)  
+            else:     
+                reply_text = (
                 f"Agent {get_frontend_agent_name()} is ready to battle!"
             )
 

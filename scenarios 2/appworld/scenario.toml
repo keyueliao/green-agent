@@ -1,0 +1,45 @@
+[scenario]
+name = "appworld-benchmark"
+description = "Green (orchestrator) evaluates Blue on AppWorld test splits"
+version = "1.0.0"
+
+# --- Agents taking part in this scenario ---
+# Green = your orchestrator (uses the tools you wrote)
+[[agents]]
+name = "Green Agent"
+card = "green_agent/green_agent_card.toml"          # your green card path
+launcher_host = "0.0.0.0"
+launcher_port = 9110
+agent_host = "0.0.0.0"
+agent_port = 9111
+model_type = "openai"
+model_name = "gpt-4o-mini"
+tools = ["green_agent/tools.py"]        # file that defines your @ab.tool functions
+mcp_servers = ["http://localhost:9001/sse"]
+is_green = true
+[[agents.participant_requirements]]
+  role = "blue_agent"
+  name = "appworld_evaluatee"
+  required = true
+  participant_agent = "Blue Agent"        # must match the agent name above
+
+# Blue = the system being evaluated
+[[agents]]
+name = "Blue Agent"
+card = "blue_agent/blue_agent_card.toml"           # if you host Blue; else your partner’s card
+launcher_host = "0.0.0.0"
+launcher_port = 9112
+agent_host = "0.0.0.0"
+agent_port = 9113
+model_type = "openai"
+model_name = "gpt-4o-mini"
+tools = ["blue_agent/tools.py"]  
+mcp_servers = ["http://localhost:9001/sse"]
+
+
+# --- Launch behavior (how AgentBeats brings things up) ---
+[launch]
+mode = "current"                         # "current" | "tmux" | "separate"
+tmux_session_name = "agentbeats-appworld"
+startup_interval = 1
+wait_for_services = true

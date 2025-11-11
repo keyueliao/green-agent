@@ -64,7 +64,11 @@ def add_system_log(
         db.update("battles", battle_id, battle)
 
         # Broadcast the updated battle to all subscribers
-        asyncio.create_task(websocket_manager.broadcast_battle_update(battle))
+        try:  
+            asyncio.run(websocket_manager.broadcast_battle_update(battle))  
+        except RuntimeError:  
+            # Event loop already running or not available, skip broadcast  
+            pass
 
         return True
     except Exception as e:
@@ -274,7 +278,7 @@ async def process_battle(battle_id: str):
             agent_url = op["register_info"].get("agent_url")
 
             opponent_info_send_to_green.append(
-                {"name": agent_name, "agent_url": agent_url}
+                {"name": agent_name, "agent_url": agent_url, "agent_id": op_id }
             )
 
         # Agent readiness check
@@ -422,6 +426,7 @@ async def process_battle(battle_id: str):
             green_agent_url,
             opponent_info_send_to_green,
             battle_id,
+            battle,
             backend_url=os.getenv("PUBLIC_BACKEND_URL"),
             green_agent_name=green_agent_name,
             red_agent_names=red_agent_names,
@@ -484,9 +489,11 @@ def check_battle_timeout(battle_id: str, timeout: int):
             update_agent_elos(battle, "draw")
 
             unlock_and_unready_agents(battle)
-            asyncio.create_task(
-                websocket_manager.broadcast_battle_update(battle)
-            )
+            try:  
+                asyncio.run(websocket_manager.broadcast_battle_update(battle))  
+            except RuntimeError:  
+                # Event loop already running or not available in thread, skip broadcast  
+                pass
 
 
 # Statistics and ELO management

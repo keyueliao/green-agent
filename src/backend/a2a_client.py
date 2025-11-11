@@ -74,6 +74,7 @@ class AgentBeatsA2AClient:
                                 endpoint: str,                                 
                                 opponent_infos: List[Dict[str, Any]],
                                 battle_id: str,
+                                battle: Dict[str, Any],
                                 backend_url: str = "http://localhost:9000",
                                 green_agent_name: str = "green_agent",
                                 red_agent_names: Dict[str, str] = None,
@@ -92,6 +93,7 @@ class AgentBeatsA2AClient:
                 battle_id=battle_id, 
                 backend_url=backend_url, 
                 agent_name=green_agent_name,  # Use actual agent name from database
+                agent_id=battle["green_agent_id"],
                 task_config=task_config
             )
             
@@ -108,7 +110,8 @@ class AgentBeatsA2AClient:
                     red_contexts[opp["agent_url"]] = BattleContext(
                         battle_id=battle_id, 
                         backend_url=backend_url, 
-                        agent_name=agent_name
+                        agent_name=agent_name,
+                        agent_id=opp["agent_id"] 
                     )
             
             # kickoff signal
@@ -119,13 +122,15 @@ class AgentBeatsA2AClient:
                     "battle_id": green_context.battle_id,
                     "backend_url": green_context.backend_url,
                     "agent_name": green_context.agent_name,
+                    "agent_id": green_context.agent_id,
                     "task_config": f"Task description: {green_context.task_config}",
                 },
                 "red_battle_contexts": {
                     url: {
                         "battle_id": ctx.battle_id,
                         "backend_url": ctx.backend_url,
-                        "agent_name": ctx.agent_name
+                        "agent_name": ctx.agent_name,
+                        "agent_id": ctx.agent_id
                     }
                     for url, ctx in red_contexts.items()
                 },

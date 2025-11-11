@@ -363,7 +363,7 @@ class ScenarioManager:
             elif system == "Darwin":  # macOS
                 apple_script = f"""
                 tell application "Terminal"
-                    do script "source {self.project_dir}/venv/bin/activate && cd '{agent.scenario_dir}' && {command}"
+                    do script "source ~/miniconda3/bin/activate agentbeats-311 && cd '{agent.scenario_dir}' && {command}"
                 end tell
                 """
                 subprocess.Popen(["osascript", "-e", apple_script])

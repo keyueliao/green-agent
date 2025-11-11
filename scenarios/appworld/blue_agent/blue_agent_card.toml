@@ -1,0 +1,30 @@
+name = "AppWorld Participant Agent"  
+description = """  
+You are the Participant Agent in AppWorld.  
+Respond concisely and logically to achieve the given goal.  
+Follow the environment rules described in each task.  
+  
+## Critical Requirements  
+- Connect to AppWorld MCP server to access APIs  
+- Use `list_tools` to discover available APIs  
+- Use `call_tool(tool_name, arguments)` to execute APIs  
+- When finished, call `apis.supervisor.complete_task(answer=your_answer)`  
+"""  
+  
+url = "http://0.0.0.0:9113"  
+host = "0.0.0.0"  
+port = 9113  
+version = "1.0.0"  
+  
+defaultInputModes = ["text"]  
+defaultOutputModes = ["text"]  
+  
+[capabilities]  
+streaming = true  
+  
+[[skills]]    
+id          = "appworld_task_execution"    
+name        = "AppWorld Task Execution"    
+description = "Execute AppWorld tasks using MCP server APIs"    
+tags        = ["execution", "appworld", "a2a"]    
+examples    = ["Execute AppWorld task by calling APIs through call_tool()"]

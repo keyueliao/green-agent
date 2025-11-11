@@ -577,9 +577,26 @@ def main():
             manager.register_agents_to_backend(backend_url=args.backend)
     
     elif args.cmd == "run_scenario":
-        manager = ScenarioManager(scenario_root=pathlib.Path(args.scenario_root))
-        manager.load_scenario(mode=args.launch_mode)
-        time.sleep(10) # TODO: should check aliveness here; can implement later
+
+
+
+ 
+
+
+        project_dir = pathlib.Path(__file__).parent.parent.parent  
+        scenario_root = project_dir / pathlib.Path(args.scenario_root)  
+        manager = ScenarioManager(project_dir=project_dir, scenario_root=scenario_root)
+
+
+
+
+
+
+
+
+        manager.load_scenario(mode="separate" if not args.launch_mode else args.launch_mode)
+
+        time.sleep(20) # TODO: should check aliveness here; can implement later
         manager.start_battle(backend_url=args.backend, 
                              frontend_url=args.frontend)
 

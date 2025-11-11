@@ -62,6 +62,7 @@ class BattleContext:
     battle_id: str
     backend_url: str
     agent_name: str
+    agent_id: str = ""
     task_config: str = ""
     
     def __post_init__(self):
