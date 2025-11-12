@@ -3,8 +3,10 @@ import requests
 import json
 
 # AppWorld endpoints
-APPWORLD_ENV_SERVER = "http://127.0.0.1:8000"       # environment server
-APPWORLD_MCP_SERVER = "http://127.0.0.1:10000/sse"  # built-in MCP server
+APPWORLD_ENV_SERVER = "http://127.0.0.1:8000"
+APPWORLD_MCP_SERVER = "http://127.0.0.1:10000"
+APPWORLD_API_SERVER = "http://127.0.0.1:9000"
+
 
 
 # ─────────────────────────────────────────────

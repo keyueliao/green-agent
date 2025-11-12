@@ -35,7 +35,7 @@ agent_port = 9113
 model_type = "openai"  
 model_name = "o4-mini"  
 tools = []  
-mcp_servers = ["http://localhost:9001/sse", "http://localhost:10000/sse"] #appworld mcp server
+mcp_servers = ["http://localhost:9001/sse", "http://localhost:10000/mcp/sse"] #appworld mcp server
 
 
 
