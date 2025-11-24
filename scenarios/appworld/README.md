@@ -1,7 +1,8 @@
 
+
 # **AppWorld Blue & Green Agents**
 
-This repository contains custom **Blue Agent** (task executor) and **Green Agent** (task evaluator) for the AppWorld environment.
+This repository contains custom **Blue Agent** (task executor) and **Green Agent** (task evaluator) built on top of the **AppWorld benchmark**.
 All custom implementation lives under:
 
 ```
@@ -10,20 +11,43 @@ scenarios/appworld/
 
 ---
 
-## **📁 Project Structure**
+# **📦 External Dependency (Required)**
+
+This project **depends on the AppWorld benchmark**.
+Please install AppWorld following the official instructions:
+
+👉 [https://appworld.dev/](https://appworld.dev/)
+
+The Green Agent interacts with AppWorld by launching its servers through `subprocess`, so the `appworld` CLI must be available in your environment.
+
+---
+
+# **🔑 API Key Setup**
+
+Before running the scenario, set your own OpenAI API key:
+
+```bash
+export OPENAI_API_KEY="your_api_key_here"
+```
+
+No API keys are included in this repository.
+
+---
+
+# **📁 Project Structure**
 
 ```
 scenarios/appworld/
 ├── blue_agent/
-│   ├── tools.py                # Blue Agent tool-call logic
-│   └── blue_agent_card.toml    # Model + tool config
+│   ├── tools.py                # Blue Agent tool-call logic (MCP)
+│   └── blue_agent_card.toml    # Model + tool configuration
 │
 ├── green_agent/
 │   ├── orchestration_tools.py  # Green Agent evaluation logic
-│   ├── green_agent_card.toml   # Model config for evaluator
+│   ├── green_agent_card.toml   # Model configuration for evaluator
 │   └── __init__.py
 │
-├── logs/                       # Execution logs (generated at runtime)
+├── logs/                       # Runtime logs (tool calls, trajectories)
 └── scenario.toml               # Scenario definition (tasks, agents, flow)
 ```
 
@@ -53,7 +77,7 @@ appworld serve mcp http \
   --port 10000
 ```
 
-### **4. Run the full scenario (Blue executes → Green evaluates)**
+### **4. Run the full scenario (Blue performs → Green evaluates)**
 
 ```bash
 agentbeats run_scenario scenarios/appworld --backend http://localhost:9002
@@ -63,36 +87,51 @@ agentbeats run_scenario scenarios/appworld --backend http://localhost:9002
 
 # **📊 Output & Logs**
 
-Execution logs and tool-calls are written to:
+AppWorld tool-call trajectories and evaluation logs are written to:
 
 ```
 scenarios/appworld/logs/
 ```
 
-The Green Agent reads these logs during evaluation.
+The Green Agent reads these logs to evaluate:
+
+* correctness (via AppWorld unit tests)
+* tool-call efficiency
+* retries / failed calls
+* execution time
+* unique tools used
 
 ---
 
-# **🛠 Modify Components**
+# **🛠 Modifying Components**
 
-* **Blue Agent**
-  `scenarios/appworld/blue_agent/tools.py`
-  `scenarios/appworld/blue_agent/blue_agent_card.toml`
+**Blue Agent Source**
 
-* **Green Agent**
-  `scenarios/appworld/green_agent/orchestration_tools.py`
-  `scenarios/appworld/green_agent/green_agent_card.toml`
+```
+scenarios/appworld/blue_agent/tools.py  
+scenarios/appworld/blue_agent/blue_agent_card.toml
+```
 
-* **Tasks / scenario configuration**
-  `scenarios/appworld/scenario.toml`
+**Green Agent Source**
+
+```
+scenarios/appworld/green_agent/orchestration_tools.py  
+scenarios/appworld/green_agent/green_agent_card.toml
+```
+
+**Scenario Configuration**
+
+```
+scenarios/appworld/scenario.toml
+```
 
 ---
 
 # **✔ Summary**
 
-* Blue Agent performs multi-app tasks in AppWorld
-* Green Agent evaluates correctness and tool-call quality
-* All components are fully runnable using the commands above
-* Implementation is fully self-contained under `scenarios/appworld/`
+* The Blue Agent executes AppWorld multi-app tasks via MCP tool calls
+* The Green Agent evaluates correctness and analyzes the tool-call trajectory
+* AppWorld must be installed separately (external dependency)
+* All implementation is self-contained under `scenarios/appworld/`
+* Run the system using the commands above
 
----
