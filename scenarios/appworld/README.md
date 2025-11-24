@@ -13,12 +13,12 @@ scenarios/appworld/
 
 # **📦 External Dependency (Required)**
 
-This project **depends on the AppWorld benchmark**.
-Please install AppWorld following the official instructions:
+
+This project depends on the AppWorld benchmark. Please install AppWorld following the official instructions:
 
 👉 [https://appworld.dev/](https://appworld.dev/)
 
-The Green Agent interacts with AppWorld by launching its servers through `subprocess`, so the `appworld` CLI must be available in your environment.
+The Green Agent interacts with AppWorld via its HTTP APIs. AppWorld services are started using the `appworld` CLI commands shown below, so the `appworld` CLI must be available in your environment.
 
 ---
 
