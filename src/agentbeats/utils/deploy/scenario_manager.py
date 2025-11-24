@@ -115,6 +115,7 @@ class ScenarioAgent:
             
         self.scenario_dir = scenario_dir
         self.task_index = task_index
+        self.task_config = config.get("task_config")
         
         # Agent configuration
         # Required fields
@@ -475,11 +476,14 @@ class ScenarioManager:
                     "launcher_url": launcher_url,
                     "is_green": agent.is_green
                 }
+                # Support both task_config and task_index  
+                if hasattr(agent, 'task_config') and agent.task_config:  
+                    register_data["task_config"] = agent.task_config  
+                elif agent.task_index:  
+                    print(f"Task index: {agent.task_index}")  
+                    register_data["task_config"] = str(agent.task_index) 
 
-                if agent.task_index:
-                    print(f"Task index: {agent.task_index}")
-                    register_data["task_config"] = str(agent.task_index)
-                
+
                 # Add participant_requirements for green agents
                 if agent.is_green and agent.participant_requirements:
                     register_data["participant_requirements"] = agent.participant_requirements
