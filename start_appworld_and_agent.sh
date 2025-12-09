@@ -1,29 +1,46 @@
 #!/bin/bash
 set -e
 
-echo "🔄 Activating environment..."
+# 永远从仓库根目录启动（很重要）
+cd /Users/liaokeyue/agentbeats-new
+
+echo "🔄 Activating appworld conda environment..."
 source /Users/liaokeyue/miniconda3/bin/activate appworld
 
-echo "🚀 Starting AppWorld APIs on port 9000..."
-appworld serve apis --port 9000 &
+mkdir -p logs
+
+echo "🚀 [1/4] Starting AppWorld APIs on port 9000 (with setup)..."
+appworld serve apis \
+  --port 9000 \
+  --with-setup \
+  > logs/apis.log 2>&1 &
 PID_APIS=$!
 
-echo "🌍 Starting AppWorld environment on port 8000..."
-appworld serve environment --port 8000 &
+echo "🌍 [2/4] Starting AppWorld environment on port 8000 (with setup)..."
+appworld serve environment \
+  --port 8000 \
+  --with-setup \
+  > logs/environment.log 2>&1 &
 PID_ENV=$!
 
-echo "🔌 Starting MCP server on port 10000..."
+echo "🔌 [3/4] Starting MCP server on port 10000 (with setup)..."
 appworld serve mcp http \
   --remote-apis-url http://localhost:9000 \
   --app-names supervisor,amazon,spotify,gmail,phone,venmo,splitwise,simple_note,todoist,file_system \
-  --port 10000 &
+  --port 10000 \
+  --with-setup \
+  > logs/mcp.log 2>&1 &
 PID_MCP=$!
 
 # 给环境一点时间启动
 sleep 3
 
-echo "🤖 Starting GREEN agent via run_agent..."
-agentbeats run_agent --agent-card scenarios/appworld/green_agent/green_agent_card.toml
+echo "🤖 [4/4] Starting GREEN agent via AgentBeats v2..."
+# 用 uv 跑 agentbeats v2 的 scenario（而不是旧的 run_agent）
+uv run agentbeats-run scenarios/appworld/scenario.toml --serve-only
+AGENT_EXIT_CODE=$?
 
-echo "🛑 Green agent exited. Cleaning up servers..."
-kill $PID_APIS $PID_ENV $PID_MCP || true
+echo "🛑 Green agent exited with code $AGENT_EXIT_CODE. Cleaning up AppWorld servers..."
+kill $PID_APIS $PID_ENV $PID_MCP 2>/dev/null || true
+
+exit $AGENT_EXIT_CODE
