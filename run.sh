@@ -17,7 +17,7 @@ async def root():
 async def health():
     return {"status": "ok"}
 
-# ⭐ 新增这个：让 /status 也返回 200 OK
+
 @app.get("/status")
 async def status():
     return {"status": "ok"}
