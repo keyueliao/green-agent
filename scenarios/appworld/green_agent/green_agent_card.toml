@@ -91,7 +91,8 @@ FOLLOW THESE STEPS STRICTLY:
 - Use reported_by="green_agent" in update_battle_process  
 - battle_id is automatically available from battle context  
 '''  
-url = "http://0.0.0.0:9111"  
+url = "http://127.0.0.1:8001"
+ 
 version = "1.0.0"  
   
 defaultInputModes = ["text"]  
