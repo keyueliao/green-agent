@@ -1,0 +1,25 @@
+[scenario]
+name = "appworld"
+description = "AppWorld benchmark evaluation scenario (remote)"
+version = "1.0.0"
+
+[[agents]]
+name = "AppWorld Green Agent"
+card = "green_agent/green_agent_card.toml"
+is_green = true
+
+  [[agents.participant_requirements]]
+  role = "blue_agent"
+  name = "AppWorld Blue Agent"
+  required = true
+  participant_agent = "AppWorld Blue Agent"
+
+[[agents]]
+name = "AppWorld Blue Agent"
+card = "blue_agent/blue_agent_card.toml"
+
+[launch]
+mode = "current"
+tmux_session_name = "agentbeats-appworld"
+startup_interval = 1
+wait_for_services = true
