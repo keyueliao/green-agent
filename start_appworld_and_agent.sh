@@ -36,12 +36,14 @@ PID_MCP=$!
 sleep 3
 
 echo "🤖 [4/4] Starting GREEN agent via AgentBeats v2..."
-# 不再切 conda 环境，所以 uv 仍然在 PATH 里
-uv run agentbeats-run scenarios/appworld/scenario.toml --serve-only
+
+# 这里改成调用你自己的 run.sh（里面启动 FastAPI / health / agent-card）
+./run.sh
 AGENT_EXIT_CODE=$?
 
 echo "🛑 Green agent exited with code $AGENT_EXIT_CODE. Cleaning up AppWorld servers..."
 kill $PID_APIS $PID_ENV $PID_MCP 2>/dev/null || true
 
 exit $AGENT_EXIT_CODE
+
 
