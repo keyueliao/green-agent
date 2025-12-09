@@ -4,12 +4,12 @@ set -e
 echo "🤖 Starting AgentBeats Controller..."
 
 
-cd /Users/liaokeyue/green-agent
+cd /Users/liaokeyue/agentbeats-new
 
-export CLOUDRUN_HOST="laboratories-treat-strips-derek.trycloudflare.com"
+
+export CLOUDRUN_HOST="promoted-dual-annual-gave.trycloudflare.com"
 
 
 export HTTPS_ENABLED=true
-
 
 agentbeats run_ctrl
