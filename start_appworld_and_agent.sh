@@ -4,27 +4,27 @@ set -e
 # 永远从仓库根目录启动（很重要）
 cd /Users/liaokeyue/agentbeats-new
 
-echo "🔄 Activating appworld conda environment..."
-source /Users/liaokeyue/miniconda3/bin/activate appworld
+# 直接指向 appworld 虚拟环境里的 appworld 可执行文件
+APPWORLD_BIN="/Users/liaokeyue/miniconda3/envs/appworld/bin/appworld"
 
 mkdir -p logs
 
 echo "🚀 [1/4] Starting AppWorld APIs on port 9000 (with setup)..."
-appworld serve apis \
+"$APPWORLD_BIN" serve apis \
   --port 9000 \
   --with-setup \
   > logs/apis.log 2>&1 &
 PID_APIS=$!
 
 echo "🌍 [2/4] Starting AppWorld environment on port 8000 (with setup)..."
-appworld serve environment \
+"$APPWORLD_BIN" serve environment \
   --port 8000 \
   --with-setup \
   > logs/environment.log 2>&1 &
 PID_ENV=$!
 
 echo "🔌 [3/4] Starting MCP server on port 10000 (with setup)..."
-appworld serve mcp http \
+"$APPWORLD_BIN" serve mcp http \
   --remote-apis-url http://localhost:9000 \
   --app-names supervisor,amazon,spotify,gmail,phone,venmo,splitwise,simple_note,todoist,file_system \
   --port 10000 \
@@ -36,7 +36,7 @@ PID_MCP=$!
 sleep 3
 
 echo "🤖 [4/4] Starting GREEN agent via AgentBeats v2..."
-# 用 uv 跑 agentbeats v2 的 scenario（而不是旧的 run_agent）
+# 不再切 conda 环境，所以 uv 仍然在 PATH 里
 uv run agentbeats-run scenarios/appworld/scenario.toml --serve-only
 AGENT_EXIT_CODE=$?
 
@@ -44,3 +44,4 @@ echo "🛑 Green agent exited with code $AGENT_EXIT_CODE. Cleaning up AppWorld s
 kill $PID_APIS $PID_ENV $PID_MCP 2>/dev/null || true
 
 exit $AGENT_EXIT_CODE
+
