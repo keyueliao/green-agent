@@ -3,15 +3,14 @@ set -e
 
 echo "🤖 Starting AgentBeats Controller..."
 
-# IMPORTANT: Do NOT cd into a local Mac path!
-# Platform expects to run inside the repo root.
+# IMPORTANT: Run inside repo root expected by AgentBeats platform
 cd "$(dirname "$0")"
 
-# Your Cloudflare tunnel (MUST start with https)
-export CLOUDRUN_HOST="https://promoted-dual-annual-gave.trycloudflare.com"
+# Your Cloudflare Tunnel (must start with https)
+export CLOUDRUN_HOST="https://ballet-bottle-layer-defend.trycloudflare.com"
 
 # Enable HTTPS
 export HTTPS_ENABLED=true
 
-# Run controller
+# Start controller
 agentbeats run_ctrl
