@@ -22,7 +22,8 @@ async def health():
 
 @app.get("/.well-known/agent-card.json")
 async def agent_card():
-    card_path = Path("scenarios/appworld/green_agent/green_agent_card.toml")
+    card_path = Path("/Users/liaokeyue/agentbeats-new/scenarios/appworld/green_agent/green_agent_card.toml")
+
     with card_path.open("rb") as f:
         data = tomllib.load(f)
     return data
